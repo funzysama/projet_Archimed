@@ -1,0 +1,16 @@
+{% import "@AdminLTE/Macros/default.html.twig" as macro %}
+{% if app.user is not defined or adminlte_direct_include is defined %}
+    {% set user = adminlte_sidebar_user() %}
+{% endif %}
+{% if app.user is defined and app.user is not null %}
+    <div class="user-panel">
+        <div class="pull-left image">
+            {{ macro.avatar(null, app.user.username)  }}
+        </div>
+        <div class="pull-left info">
+            <p>{{ app.user.username }}</p>
+
+            <a href="#"><i class="fas fa-circle text-success"></i> {{ 'Online'|trans({}, 'AdminLTEBundle') }}</a>
+        </div>
+    </div>
+{% endif %}

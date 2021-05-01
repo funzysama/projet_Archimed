@@ -1,0 +1,6 @@
+{% extends '@AdminLTE/layout/default-layout.html.twig' %}
+    {% block sidebar_user %}
+        {% if app.user is not null and is_granted('IS_AUTHENTICATED_FULLY') %}
+            {% include 'admin/Sidebar/user-panel.html.twig' %}
+        {% endif %}
+    {% endblock %}

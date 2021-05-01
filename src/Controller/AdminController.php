@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class AdminController
  * @package App\Controller
- * @Route("/", name="admin")
+ * @Route("/", name="admin_")
  */
 class AdminController extends AbstractController
 {

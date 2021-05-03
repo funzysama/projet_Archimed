@@ -113,6 +113,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/antishov/doctrine-extensions-bundle" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/gedmo/doctrine-extensions" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/kevinpapst/adminlte-bundle" />
+      <excludeFolder url="file://$MODULE_DIR$/var" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

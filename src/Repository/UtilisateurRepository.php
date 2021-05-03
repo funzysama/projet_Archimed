@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Utilisateur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -17,9 +19,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class UtilisateurRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    private UserPasswordEncoderInterface $passwordEncoder;
+
+    public function __construct(ManagerRegistry $registry, UserPasswordEncoderInterface $passwordEncoder)
     {
         parent::__construct($registry, Utilisateur::class);
+        $this->passwordEncoder = $passwordEncoder;
     }
 
     /**
@@ -36,32 +41,60 @@ class UtilisateurRepository extends ServiceEntityRepository implements PasswordU
         $this->_em->flush();
     }
 
-    // /**
-    //  * @return Utilisateur[] Returns an array of Utilisateur objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getUserFromDiscordOauth(
+        string $discordID,
+        string $discordUsername,
+        string $email
+    ): ?Utilisateur
     {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $user = $this->findOneBy([
+            'email' => $email
+        ]);
 
-    /*
-    public function findOneBySomeField($value): ?Utilisateur
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        if(!$user){
+            return null;
+        }
+        if($user->getDiscordID() !== $discordID){
+            $user = $this->updateUserWithDiscordData($discordID, $discordUsername, $user);
+        }
+
+        return $user;
     }
-    */
+
+    private function updateUserWithDiscordData(string $discordID, string $discordUsername, Utilisateur $user): Utilisateur
+    {
+        $user->setDiscordID($discordID);
+        $user->setDiscordUsername($discordUsername);
+        $this->_em->flush();
+
+        return $user;
+    }
+
+    public function createUserFromDiscordOAuth(
+        string $discordID,
+        string $discordUsername,
+        string $email,
+        string $randomPassword
+    ): Utilisateur
+    {
+        $user = new Utilisateur();
+
+        $user->setDiscordID($discordID)
+             ->setDiscordUsername($discordUsername)
+             ->setEmail($email)
+             ->setRoles(["ROLE_USER"])
+             ->setIsVerified(true)
+             ->setPseudo($discordUsername)
+             ->setPassword(
+                $this->passwordEncoder->encodePassword(
+                    $user,
+                    $randomPassword
+                )
+            );
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        return $user;
+
+    }
 }

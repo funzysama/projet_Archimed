@@ -61,7 +61,7 @@ class MenuCreatorSubscriber implements EventSubscriberInterface
         );
 
         $event->addItem(
-            new MenuItemModel('context', 'register', 'app_register', [], 'fas fa-code')
+            new MenuItemModel('context', 'Gestion Utilisateurs', 'admin_listUser', [], 'fas fa-code')
         );
 
         if ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {

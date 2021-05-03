@@ -65,6 +65,16 @@ class Utilisateur implements UserInterface
      */
     private $utilisateurs;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $discordID;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $discordUsername;
+
     public function __construct()
     {
         $this->utilisateurs = new ArrayCollection();
@@ -218,6 +228,30 @@ class Utilisateur implements UserInterface
                 $utilisateur->setSuperieur(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDiscordID(): ?string
+    {
+        return $this->discordID;
+    }
+
+    public function setDiscordID(?string $discordID): self
+    {
+        $this->discordID = $discordID;
+
+        return $this;
+    }
+
+    public function getDiscordUsername(): ?string
+    {
+        return $this->discordUsername;
+    }
+
+    public function setDiscordUsername(?string $discordUsername): self
+    {
+        $this->discordUsername = $discordUsername;
 
         return $this;
     }

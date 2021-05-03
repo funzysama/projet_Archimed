@@ -3,13 +3,21 @@ security:
         App\Entity\Utilisateur:
             algorithm: auto
 
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        # used to reload user from session & other features (e.g. switch_user)
+        chain_provider:
+            chain:
+                providers:
+                    - 'app_user_provider'
+                    - 'discord_user_provider'
+
         app_user_provider:
             entity:
                 class: App\Entity\Utilisateur
                 property: email
+
+        discord_user_provider:
+            id: App\Security\DiscordUserProvider
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -23,19 +31,10 @@ security:
             guard:
                 authenticators:
                     - App\Security\AppMainAuthenticator
+                    - App\Security\DiscordAuthenticator
+                entry_point: App\Security\AppMainAuthenticator
             logout:
                 path: app_logout
-                # where to redirect after logout
-                # target: app_any_route
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#firewalls-authentication
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/admin, roles: ROLE_ADMIN }
          - { path: ^/profile, roles: ROLE_USER }
